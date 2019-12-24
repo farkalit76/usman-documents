@@ -2,7 +2,7 @@
 This folder contains the following documnets including the distributed computing systems.
 It builds applcation to support BigData or to do real time analysis/data-structure.
 1. Spring-boot Micro Services as REST with Json Web Token(JWT)
-2. Kafka Topic/Queue with Zookeeper (fast, scalable, durable, and fault-tolerant publish-subscribe messaging system). Good to use asynchronus process like Audit, SMS, Email etc.
+2. Kafka Topic/Queue with Zookeeper (fast, scalable, durable, and fault-tolerant publish-subscribe messaging system). Good to use asynchronus process like Audit Logging, SMS, Email etc.
 3. Redis as caching db
 4. Docker as container
 5. Swagger with Eureka Service Registry
