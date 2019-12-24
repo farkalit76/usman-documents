@@ -18,7 +18,7 @@ Kafka provides horizontal scale through sharding. It shards a topic log into hun
 14. React JS with Node and NPM
 15. Visual Studio Code for Web App
 16. Eclipse/STS4/IntelliJ for micro service application
-17. Elastic Search
+17. Elastic Search with Kibana to visualize its data.
 18. Github with SourceTree
 19. XML, JSP, Servlet, JQuery, AJAX, CSS, bootstrap 
 20. Oracle12c and MySQL Database
