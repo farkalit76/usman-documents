@@ -4,21 +4,22 @@ This folder contains the following documnets including the distributed computing
 2. Kafka
 3. Redis
 4. Docker
-5. Swagger
+5. Swagger with Eureka Service Registry
 6. Postman or SoapUI
 7. JUnit with Mockito
 8. acoco with SonarQube
-9. Maven with Jenkins or Hudson
+9. Log4J, Maven with Jenkins or (Ant with Hudson) for DevOps & CI/CD
 10. MobaXterm for Linux
 11. NoSQL Cassandra or MongoDB
 12. Oracle SQL Developer or DevCenter
 13. Angular JS
 14. React JS
 15. Visual Studio Code for Web App
-16. Eclipse or STS4 for micro service application
+16. Eclipse/STS4/IntelliJ for micro service application
 17. Elastic Search
 18. Github with SourceTree
 19. XML, JSP, Servlet, JQuery, AJAX, CSS, bootstrap 
 20. Oracle12c and MySQL Database
+21. Tomcat 9 and WebLogic 12C as web/app container
 
 
