@@ -20,6 +20,6 @@ This folder contains the following documnets including the distributed computing
 18. Github with SourceTree
 19. XML, JSP, Servlet, JQuery, AJAX, CSS, bootstrap 
 20. Oracle12c and MySQL Database
-21. Tomcat 9 and WebLogic 12C as web/app container
+21. Tomcat 9 and WebLogic Server 12C as web/app container
 
 
