@@ -1,6 +1,6 @@
 # usman-documents
 This folder contains the following documnets including the distributed computing systems.
-1. Spring-boot Micro Services as REST
+1. Spring-boot Micro Services as REST with Json Web Token(JWT)
 2. Kafka
 3. Redis
 4. Docker
