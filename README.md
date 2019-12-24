@@ -18,5 +18,7 @@ This folder contains the following documnets.
 16. Eclipse or STS4 for micro service application
 17. Elastic Search
 18. Github with SourceTree
+19. XML, JSP, Servlet, JQuery, AJAX, CSS, bootstrap 
+20. Oracle12c and MySQL Database
 
 
