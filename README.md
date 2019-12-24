@@ -25,5 +25,5 @@ It builds applcation to support BigData or to do real time analysis/data-structu
 22. MS Azure and AWS as Cloud Computing
 23. Scala, Python for Functional Languages
 24. Java/J2EE v8.x for Object Oriented Language (Supports Functional as well)
-25. BigData (e.g.; Audios, Videos, Images, Chatting text messages etc.) with Hadoop and Spark
+25. BigData (e.g.; Audios, Videos, Images, Emails, Chatting text messages etc.) with Hadoop and Spark
 
