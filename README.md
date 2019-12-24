@@ -7,7 +7,7 @@ This folder contains the following documnets including the distributed computing
 5. Swagger with Eureka Service Registry
 6. Postman or SoapUI
 7. JUnit with Mockito
-8. acoco with SonarQube
+8. Jacoco with SonarQube/Lint
 9. Log4J, Maven with Jenkins or (Ant with Hudson) for DevOps & CI/CD
 10. MobaXterm for Linux
 11. NoSQL Cassandra or MongoDB
