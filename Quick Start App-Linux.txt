@@ -1,0 +1,121 @@
+Quick Start Application Servers on Linux with Docker:
+==============================================================
+Open MobaXterm and open sessions for IP:10.1.131.136:
+[root@uat-docker ~]# echo $JAVA_HOME
+/usr/lib/jvm/jdk1.8.0_231
+
+
+0. 	Start Oracle Server
+0. 	Start SOAP & EMAIL and all the other applications
+
+1. Start Redis: By default it is already started. To test:
+	$ cd redis-5.0.5
+	$ redis-cli -h 10.1.131.136
+	$ 10.1.131.136>PING
+2. Start Zookeper
+	$ cd kafka_2.12-2.3.0
+	$ bin/zookeeper-server-start.sh config/zookeeper.properties
+3. Start Kafka Server
+	$ cd kafka_2.12-2.3.0
+	$ bin/kafka-server-start.sh config/server.properties
+
+4. Start Docker 
+	$ cd bbyn-channel-mgmt 
+	$ docker build -f Dockerfile -t bbyn-channel-mgmt .
+	$ docker run -p 8761:8761 bbyn-channel-mgmt
+	
+	$ cd bbyn-customer-mgmt
+	$ docker build -f Dockerfile -t bbyn-customer-mgmt .
+	$ docker run -p 8091:8091 bbyn-customer-mgmt
+	
+	$ cd byn-account-mgmt
+	$ docker build -f Dockerfile -t bbyn-account-mgmt .
+	$ docker run -p 8092:8092 bbyn-account-mgmt
+	
+	$ cd bbyn-transfer-mgmt
+	$ docker build -f Dockerfile -t bbyn-transfer-mgmt .
+	$ docker run -p 8093:8093 bbyn-transfer-mgmt
+	$ docker run -v /var/app/transfer-log:/logs -p 8093:8093 bbyn-transfer-mgmt
+	
+	$ cd bbyn-utility-services
+	$ docker build -f Dockerfile -t bbyn-utility-services .
+	$ docker run -p 8088:8088 bbyn-utility-services
+	
+-------------------------------------------------------
+5. Docker with Volume--------------------------------->
+-------------------------------------------------------
+    Crate /root/bbyn-transfer-mgmt/transfer-run.sh file for transfer:
+	#!/bin/sh
+	java -Dlogging.config=log4j2.xml -Dspring.profiles.active=uat -Doracle.jdbc.timezoneAsRegion=false -jar bbyn-transfer-mgmt.jar
+
+    Update Dockerfile:---------------------------------
+	FROM openjdk:8
+	COPY target/bbyn-transfer-mgmt.jar bbyn-transfer-mgmt.jar
+	COPY target/log4j2.xml log4j2.xml
+	COPY target/keystore.bin /tmp/keystore.bin
+	COPY target/resource.cgn /tmp/resource.cgn
+	COPY target/resource.cgz /tmp/resource.cgz
+	EXPOSE 8093
+	COPY transfer-run.sh /transfer-run.sh
+	ENTRYPOINT ["/transfer-run.sh"]
+
+	Build and run:--------------------------------------
+	$docker build -f Dockerfile -t bbyn-transfer-mgmt .
+	$docker run -v /var/app/transfer-log:/logs -p 8093:8093 bbyn-transfer-mgmt
+	 OR [detached mode with a name]
+	$docker run -d --name transfer-mgmt -v /var/app/transfer-log:/logs -p 8093:8093 bbyn-transfer-mgmt
+	
+	Stop docker application on container:------------------
+	$docker stop app_name [get it from docker ps]  
+
+	---------------------------------------------------
+	*********Docker with Volume and Log files**********
+	---------------------------------------------------
+	And demo-run.sh:
+		#!/bin/sh
+		java -Dspring.profiles.active=uat -Dlogging.config=log4j2.xml -jar usman-sboot-docker.jar
+		
+	Update Dockerfile:
+		FROM openjdk:8
+		COPY target/usman-sboot-docker.jar usman-sboot-docker.jar
+		COPY target/log4j2.xml log4j2.xml
+		EXPOSE 8080
+		COPY demo-run.sh /demo-run.sh
+		ENTRYPOINT ["/demo-run.sh"]
+	Build and Run:
+		$docker build -f Dockerfile -t usman-sboot-docker .
+		$docker run -v /var/app/log:/logs -p 8080:8080 usman-sboot-docker
+	Now Open /var/app/log/....file: you will get sboot-docker.log
+
+---------------------------------------------
+6. 	Docker Help:
+--------------------------------------------
+	View All Docker Images and Containes
+	$ docker images –a 	[View All Images]
+	$ docker ps –a 		[View All Containers]
+	
+	Delete Docker Image:
+	$ docker rmi -f [IMAGE_ID]
+	
+	Delete Docker Containers:
+	$ docker rm -f [CONTAINER_ID]
+	
+	Delete All Docker Images and Containers
+	To delete untagged images use:
+	$ docker rmi -f $(docker images | grep "<none>" | awk "{print \$3}") 
+
+	And similarly to delete containers, try something like
+	$docker rm -f $(docker ps -aq) (this will remove all containers, so be careful)
+	
+	Stop Docker Containers:
+	$docker stop [CONTAINER_NAME]
+	$ OR CTRL+C [May not work for all containers]
+
+=========================================================
+7. Display Eureka server and application on Browser:
+=========================================================
+	1. Channel gateway: http://10.1.131.136:8761/
+	2. Customer App: http://10.1.131.136:8091/swagger-ui.html
+	3. Accounts App: http://10.1.131.136:8092/swagger-ui.html
+	4. Transfer App: http://10.1.131.136:8093/swagger-ui.html
+	5. Utility Serv: http://10.1.131.136:8088/swagger-ui.html	

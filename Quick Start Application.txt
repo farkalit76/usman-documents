@@ -1,0 +1,322 @@
+Quick Start Application Servers on Windows:
+==============================================
+0. Start Oracle Server
+0. Start SOAP & EMAIL and all the applications
+1. Start Redis: 
+	$ cd Farkalit\softwares\redis-5.0.5\bin>
+	$ redis-server ../redis.conf
+	$ redis-cli -h 10.7.91.40
+2. Start Zookeper
+	$ cd Farkalit\softwares\kafka_2.12-2.3.0\bin\windows [Optional]
+	$ zkserver
+3. Start Kafka Server
+	$ cd Farkalit\softwares\kafka_2.12-2.3.0\bin\windows
+	$ kafka-server-start.bat ..\..\config\server.properties
+4. Start Kafka Producer
+	$ cd Farkalit\softwares\kafka_2.12-2.3.0\bin\windows
+	$ kafka-console-producer.bat --broker-list localhost:9092 --topic test
+5. Start Kafka Consumer:
+	$ cd Farkalit\softwares\kafka_2.12-2.3.0\bin\windows
+	$ kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic test --from-beginning
+6. Start Docker
+	$ cd D:\Farkalit\devops\bbyn-channel-mgmt
+	$ docker build -f Dockerfile -t bbyn-channel-mgmt .
+	$ docker run -p 8761:8761 bbyn-channel-mgmt
+	
+	$ cd D:\Farkalit\devops\bbyn-customer-mgmt
+	$ docker build -f Dockerfile -t bbyn-customer-mgmt .
+	$ docker run -p 8091:8091 bbyn-customer-mgmt
+	
+	$ cd D:\Farkalit\devops\bbyn-account-mgmt
+	$ docker build -f Dockerfile -t bbyn-account-mgmt .
+	$ docker run -p 8092:8092 bbyn-account-mgmt
+	
+	$ cd D:\Farkalit\devops\bbyn-transfer-mgmt
+	$ docker build -f Dockerfile -t bbyn-transfer-mgmt .
+	$ docker run -p 8093:8093 bbyn-transfer-mgmt
+	
+	$ cd D:\Farkalit\devops\bbyn-utility-services
+	$ docker build -f Dockerfile -t bbyn-utility-services .
+	$ docker run -p 8088:8088 bbyn-utility-services
+	
+	$D:\Farkalit\devops\usman-sboot-demo>docker build -f Dockerfile -t bbyn-channel-mgmt .
+	
+
+---------------------------------------------
+7. 	Docker Help:
+--------------------------------------------
+	View All Docker Images and Containes
+	$ docker images –a 	[View All Images]
+	$ docker ps –a 		[View All Containers]
+	
+	Delete Docker Image:
+	$ docker rmi -f [IMAGE_ID]
+	
+	Delete Docker Containers:
+	$ docker rm -f [CONTAINER_ID]
+	
+	Delete All Docker Images and Containers
+	To delete untagged images use:
+	$docker rmi -f $(docker images | grep "<none>" | awk "{print \$3}") 
+
+	And similarly to delete containers, try something like
+	$docker rm -f $(docker ps -aq) (this will remove all containers, so be careful)
+	
+	Stop Docker Containers:
+	$docker stop [CONTAINER_NAME]
+	$ OR CTRL+C [May not work for all containers]
+
+
+8. Display Eureka server and application on Browser:
+=========================================================
+	1. Channel gateway: http://10.7.91.40:8761/
+	2. Customer App: http://10.7.91.40:8091/swagger-ui.html
+	3. Accounts App: http://10.7.91.40:8092/swagger-ui.html
+	4. Transfer App: http://10.7.91.40:8093/swagger-ui.html
+	5. Utility Serv: http://10.7.91.40:8088/swagger-ui.html	
+	
+	
+D:\Users\vxebiau>systeminfo
+
+docker run -p 8090:8080 usman-sboot-docker
+
+Spring boot with Mysql and Docker
+---------------------------------
+2.Run MySQL in Docker container: http://www.ehcoo.com/springBootDockerMySQLDemo.html
+#docker run --name demo-mysql -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=demo -e MYSQL_USER=demo_user -e MYSQL_PASSWORD=demo_pass -d mysql:5.6  ##-p 3306:3306
+docker run --name usman-mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=testdb -d mysql:8.0
+check the Log If MySQL is Running: 
+docker logs usman-mysql
+Now run the application with mysql:
+#docker run -p 8080:8080 --name demo-app --link demo-mysql:mysql -d ehcoo/spring-boot-docker-mysql
+#docker run -p 8092:8080 --name usman-app --link usman-mysql:usman-mysql -d usman-sboot-mysql
+docker run -p 8092:8080 --name usman-sboot-mysql --link usman-mysql:usman-mysql -d usman-sboot-mysql
+
+
+======Another Way Docker with Mysql======
+URL: https://www.javainuse.com/devOps/docker/docker-mysql
+--First lets create a network named employee-mysql
+#docker network create employee-mysql
+docker network create demo-mysql
+docker network ls
+--We will use the image provided by dockerhub to run as container
+#docker container run --name mysqldb --network employee-mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=bootdb -d mysql:8
+docker container run --name mysqldb --network demo-mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=testdb -d mysql:8.0
+--Next let us check if container has started
+#docker container logs -f ae
+docker container logs -f mysqldb
+--Using the exec command we can also inspect if the database named bootdb is created successfully
+#docker container exec -it ae bash
+docker container exec -it mysqldb bash
+--Run the PL/SQL commoand after login
+root@fcba5785a639:/# mysql -uroot -proot
+...
+mysql>
+mysql> Create table.....
+---Next we will modify the application.properties in the Spring Boot application to make use of the mysql container name i.e.mysqldb instead of localhost
+#spring.datasource.url=jdbc:mysql://mysqldb/bootdb
+spring.datasource.url=jdbc:mysql://mysqldb/testdb
+--Build mysql-application
+#docker image build -t employee-jdbc .
+docker build -t usman-sboot-mysql .
+---Next run this as a container. Also we are running the container on the employee-mysql network.
+#docker container run --network employee-mysql --name employee-jdbc-container -p 8080:8080 -d employee-jdbc
+docker container run --network demo-mysql --name demo-mysql-container -p 8092:8080 -d usman-sboot-mysql
+--Next see the contanerr logs.
+#docker container logs -f 34 
+docker container ls
+docker container logs -f 2e2a9d5df3a7
+
+---Create Table
+CREATE TABLE country 
+( 
+  code VARCHAR(3) NOT NULL,
+  name VARCHAR(100) NOT NULL 
+); 
+Insert into testdb.country(code, name) values ('KW', 'Kuwait');
+Insert into testdb.country(code, name) values ('IN', 'India');
+--Inspect the Mysql details
+[root@uat-docker ~]# docker inspect demo-mysql
+
+
+Docker with Oracle 12.x
+=========================================================
+--Starting an Oracle Database Server instance
+First Open in browser : https://container-registry.oracle.com
+Click Sigin: Enter user/password (if do not have then create new one)
+Click on Database->enterprise (continue -> Go down and accept the licence.)
+Now com to the docker to login:
+docker login https://container-registry.oracle.com
+User:user/pswd  [farkalit.usman76@gmail.com]
+docker run -d --name usman-oracle store/oracle/database-enterprise:12.2.0.1
+OR: $ docker run -d -it --name usman-oracle container-registry.oracle.com/database/enterprise:12.2.0.1
+---OR----
+docker run -d -it --name usman-oracle -v OracleDBData:/ORCL container-registry.oracle.com/database/enterprise:12.2.0.1
+docker run -d -it --name usman-oracle -p 1521:1521 -p 5500:5500 -e ORACLE_SID=test_sid -e ORACLE_PDB=test_pdb -v OracleDBData:/ORCL container-registry.oracle.com/database/enterprise:12.2.0.1
+
+--Connecting to the Database Server Container
+--The default password for sys is Oradoc_db1 which should be changed after the database is up and running.
+docker ps
+# docker exec -it <oracle-db> bash -c "source /home/oracle/.bashrc; sqlplus /nolog"
+docker exec -it usman-oracle bash -c "source /home/oracle/.bashrc; sqlplus /nolog"
+
+SQL> conn sys/Oradoc_db1@ORCLCDB as sysdba
+
+
+SQL> conn sys as sysdba
+Enter password: Oradoc_db1
+Connected.
+SQL>show user;
+SQL>SET LINESIZE 3000;
+SQL>SET PAGESIZE 40000;
+SQL> Select username, user_id, DEFAULT_TABLESPACE from dba_users;
+SQL> select username as schema_name from sys.all_users order by username;
+SQL> select username as schema_name from sys.dba_users order by username;
+SQL> SELECT owner, table_name FROM dba_tables;
+SQL> 
+SQL> alter session set "_ORACLE_SCRIPT"=true;
+SQL> create user usmandb identified by usman123;
+alter session set current_schema = usmandb;
+grant create session to usmandb;
+grant create table to usmandb;
+alter user usmandb quota unlimited on system;
+GRANT UNLIMITED TABLESPACE TO usmandb;
+
+SELECT TABLESPACE_NAME, STATUS, CONTENTS FROM USER_TABLESPACES; 
+alter user usmandb quota unlimited on system;
+conn usmandb/usman123;
+create schema authorization usmandb;
+ORA-01031: insufficient privileges
+GRANT UNLIMITED TABLESPACE TO usmandb;
+GRANT  SELECT,  INSERT,  UPDATE,  DELETE scheam.usmandb TO  usmandb;
+  
+
+Create table CUSTS_PROFILES(
+	cust_id NUMBER NOT NULL,
+	name_ar VARCHAR2(50),
+	name_en VARCHAR2(50),
+	user_name VARCHAR2(50) NOT NULL,
+	dob DATE,
+	mobile_no VARCHAR2(15),
+	PRIMARY KEY(cust_id)
+);
+SQL> Insert into custs_profiles (cust_id, name_ar, name_en, user_name, dob, mobile_no) values ( 20188, '', 'usman', 'usmani', DATE '2000-10-10', '+9875555555');
+SQL> select * from custs_profiles;
+
+docker run -p 8093:8080 --name usman-sboot-oracle --link usman-oracle:usman-oracle -d usman-sboot-oracle
+docker container ls
+docker container logs -f 2e2a9d5df3a7
+docker inspect usman-oracle
+OR
+docker container run --network usman-oracle --name usman-oracle-container -p 8093:8080 -d usman-sboot-oracle
+
+
+
+
+
+
+
+First lets create a network named usman-mysql
+$ docker network ls
+$ docker network create usman-mysql -d nat
+
+
+Uninstall Docker
+
+Same issue here, diagnostic id 86E9E586-5A1F-434C-A372-5F1208B6A468/20180928132047
+
+Switching from Windows to Linux
+---------------------------------------------------------------------------
+What I have tried so far:
+
+Uninstall/install docker along with Hyper-V
+Manually create via Hyper-V manager app DockerNAT switch, without success
+MOFCOMP %SYSTEMROOT%\System32\WindowsVirtualization.V2.mof unfortunately does not work for me
+powershell -ExecutionPolicy ByPass -File "C:\Program Files\Docker\Docker\resources\MobyLinux.ps1" -create fails with this error log :
+Hyper-V\Get-VMNetworkAdapter : Hyper-V was unable to find a virtual switch with name .
+Is there anything else I can try?
+
+
+How to copy Docker images from one host to another without using a repository
+-------------------------------------------------------------------------------
+https://stackoverflow.com/questions/23935141/how-to-copy-docker-images-from-one-host-to-another-without-using-a-repository
+
+You will need to save the Docker image as a tar file:
+
+docker save -o <path for generated tar file> <image name>
+Then copy your image to a new system with regular file transfer tools such as cp, scp or rsync(preferred for big files). After that you will have to load the image into Docker:
+
+docker load -i <path to image tar file>
+PS: You may need to sudo all commands.
+
+EDIT: You should add filename (not just directory) with -o, for example:
+
+docker save -o c:/myfile.tar centos:16
+
+
+
+Kitematic is compatible with Docker Desktop and can be used as a graphical interface to manage your Docker containers. 
+You can download it. Then make sure you install it in C:\Program Files\Docker\Kitematic
+
+
+Error createing a network:
+-------------------------------------------------
+D:\Farkalit\devops\usman-sboot-docker>docker network create usman-mysql
+Error response from daemon: could not find plugin bridge in v1 plugin registry: plugin not found
+
+D:\Farkalit\devops\usman-sboot-docker>docker network create -d nat usman-mysql
+Error response from daemon: HNS failed with error : Unspecified error
+
+Switching to Linux Contianers gives error
+-----------------------------------------------------
+Operating System: Windows 10 Enterprise Version 1803 (OS Build 17134.1006)
+
+Unable to create - The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: Hyper-V was unable to find a virtual switch with name "DockerNAT".
+
+   at Docker.Core.Pipe.NamedPipeClient.<TrySendAsync>d__5.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   at Docker.Core.Pipe.NamedPipeClient.Send(String action, Object[] parameters)
+   at Docker.Actions.DoStart(SynchronizationContext syncCtx, Boolean showWelcomeWindow, Boolean executeAfterStartCleanup)
+   at Docker.Actions.<>c__DisplayClass24_0.<Start>b__0()
+   at Docker.ApiServices.TaskQueuing.TaskQueue.<>c__DisplayClass17_0.<.ctor>b__1()
+   
+   
+   ==========================================================
+   
+   
+[root@uat-docker ~]# docker run -d -it --name usman-oracle container-registry.oracle.com/database/enterprise:12.2.0.1
+Unable to find image 'container-registry.oracle.com/database/enterprise:12.2.0.1' locally
+docker: Error response from daemon: Get https://container-registry-phx.oracle.com/v2/database/enterprise/manifests/12.2.0.1: unauthorized: authentication required.
+See 'docker run --help'.
+[root@uat-docker ~]# docker login container-registry.oracle.com
+Username: farkalit.usman76@gmail.com
+Password:
+WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[root@uat-docker ~]# docker run -d -it --name usman-oracle container-registry.oracle.com/database/enterprise:12.2.0.1
+Unable to find image 'container-registry.oracle.com/database/enterprise:12.2.0.1' locally
+docker: Error response from daemon: pull access denied for container-registry.oracle.com/database/enterprise, repository does not exist or may require 'docker login': denied: requested access to the resource is denied.
+See 'docker run --help'.
+[root@uat-docker ~]# docker login container-registry.oracle.com
+Authenticating with existing credentials...
+WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[root@uat-docker ~]# docker run -d -it --name usman-oracle container-registry.oracle.com/database/enterprise:12.2.0.1
+Unable to find image 'container-registry.oracle.com/database/enterprise:12.2.0.1' locally
+12.2.0.1: Pulling from database/enterprise
+f07cd347d7cc: Pull complete
+e6d45c5d2f56: Pull complete
+0c3e3e3a81c6: Pull complete
+522e6a16038b: Pull complete
+b49278619f9a: Pull complete
+Digest: sha256:1f700299f7a96c5ffcdb14e251745f1cf3832fc32fff59ee7fdce956bd5b5bf8
+Status: Downloaded newer image for container-registry.oracle.com/database/enterprise:12.2.0.1
+0ba00e4ec27c6b03d169ab7e6b7eded593c6d78ee2b37176480a2a6f003ae537
+[root@uat-docker ~]#
